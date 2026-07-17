@@ -1,0 +1,20 @@
+name: YouTube Live
+on:
+  workflow_dispatch:
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install FFmpeg
+        run: sudo apt update && sudo apt install -y ffmpeg
+
+      - name: Start Streaming
+        run: |
+          ffmpeg -re -f concat -safe 0 -i list.txt \
+          -c:v libx264 -preset veryfast -b:v 2000k -maxrate 2000k -bufsize 4000k \
+          -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -ar 44100 \
+          -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
