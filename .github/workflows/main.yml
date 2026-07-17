@@ -1,24 +1,20 @@
 name: YouTube Live
-
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 jobs:
   stream:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install FFmpeg
+      - name: Faylni yuklab olish
+        run: wget -O video.mp4 "https://github.com/wiithreee-ops/congenial-invention/releases/download/v1.0/live.mp4"
+      
+      - name: FFmpeg o'rnatish
         run: sudo apt update && sudo apt install -y ffmpeg
-
-      - name: Start Streaming
+      
+      - name: Jonli efirni boshlash
         run: |
           while true; do
-            ffmpeg -re -f concat -safe 0 -i list.txt \
-            -c:v libx264 -preset veryfast -b:v 2000k -maxrate 2000k -bufsize 4000k \
-            -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -ar 44100 \
-            -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+            ffmpeg -re -stream_loop -1 -i video.mp4 -c copy -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+            echo "Efir uzildi, qayta ulanmoqda..."
             sleep 5
           done
